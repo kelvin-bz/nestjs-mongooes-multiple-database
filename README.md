@@ -96,6 +96,40 @@ export class AppModule {}
 
 Please note that you shouldn't have multiple connections without a name, or with the same name, otherwise they will get overridden.
 
+## Insight Module
+The InsightModule is responsible for managing the Insight, Patient, and Health entities. It imports the necessary Mongoose schemas and registers them with their respective database connections. This module also provides the InsightService and InsightController to handle business logic and HTTP requests related to insights.
+
+```typescript
+// src/insight/insight.module.ts
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { InsightService } from './insight.service';
+import { InsightController } from './insight.controller';
+import { Insight, InsightSchema } from './schemas/insight.schema';
+import { Patient, PatientSchema } from './schemas/patient.schema';
+import { Health, HealthSchema } from './schemas/health.schema';
+
+@Module({
+  imports: [
+    MongooseModule.forFeature(
+      [{ name: Insight.name, schema: InsightSchema }],
+      'insight',
+    ),
+    MongooseModule.forFeature(
+      [{ name: Patient.name, schema: PatientSchema }],
+      'patients',
+    ),
+    MongooseModule.forFeature(
+      [{ name: Health.name, schema: HealthSchema }],
+      'health',
+    ),
+  ],
+  controllers: [InsightController],
+  providers: [InsightService],
+})
+export class InsightModule {}
+
+```
 ## Implementing the Insight Service
 
 The InsightService class is implemented to perform operations across the different MongoDB databases. The service class is injected
