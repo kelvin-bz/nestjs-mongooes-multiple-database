@@ -1,40 +1,52 @@
-// src/app.module.ts
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { InsightModule } from './insight/insight.module';
-import databaseConfig from './config/database.config';
+import { PatientModule } from './patient/patient.module';
+import { HealthModule } from './health/health.module';
+import databaseConfig, { CONFIG_DATABASE } from "./config/database.config";
 
+// src/app.module.ts
 @Module({
   imports: [
     ConfigModule.forRoot({
       load: [databaseConfig],
+      envFilePath: '.env',
+      isGlobal: true,
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        uri: configService.get<string>('database.insight.uri'),
-        connectionName: 'insight',
-      }),
+      connectionName: 'insight',
+      useFactory: async (configService: ConfigService) => {
+        return {
+          uri: configService.get(CONFIG_DATABASE).insight.uri,
+        };
+      },
       inject: [ConfigService],
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        uri: configService.get<string>('database.patients.uri'),
-        connectionName: 'patients',
-      }),
+      connectionName: 'patients',
+      useFactory: async (configService: ConfigService) => {
+        return {
+          uri: configService.get(CONFIG_DATABASE).patients.uri,
+        };
+      },
       inject: [ConfigService],
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        uri: configService.get<string>('database.health.uri'),
-        connectionName: 'health',
-      }),
+      connectionName: 'health',
+      useFactory: async (configService: ConfigService) => {
+        return {
+          uri: configService.get(CONFIG_DATABASE).health.uri,
+        };
+      },
       inject: [ConfigService],
     }),
     InsightModule,
+    PatientModule,
+    HealthModule,
   ],
 })
 export class AppModule {}

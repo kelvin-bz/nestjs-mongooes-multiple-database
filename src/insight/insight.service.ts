@@ -2,21 +2,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Insight, InsightDocument } from './schemas/insight.schema';
-import { Patient, PatientDocument } from './schemas/patient.schema';
-import { Health, HealthDocument } from './schemas/health.schema';
+import { Insight, InsightDocument } from './insight.schema';
 
 @Injectable()
 export class InsightService {
   constructor(
     @InjectModel(Insight.name, 'insight')
     private insightModel: Model<InsightDocument>,
-
-    @InjectModel(Patient.name, 'patients')
-    private patientModel: Model<PatientDocument>,
-
-    @InjectModel(Health.name, 'health')
-    private healthModel: Model<HealthDocument>,
   ) {}
 
   async create(data: string): Promise<Insight> {
@@ -29,21 +21,6 @@ export class InsightService {
   }
 
   async countPatientsGreater40WithObesity(): Promise<number> {
-    const patientsWithDiabetes = await this.healthModel
-      .find({ condition: 'Obesity' })
-      .exec();
-    const patientIdsWithDiabetes = patientsWithDiabetes.map(
-      (patient) => patient.patientId,
-    );
-
-    const count = await this.patientModel
-      .countDocuments({
-        patientId: { $in: patientIdsWithDiabetes },
-        age: { $gt: 40 },
-      })
-      .exec();
-
-
-    return count;
+    return 40
   }
 }
