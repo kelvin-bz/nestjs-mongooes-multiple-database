@@ -6,11 +6,14 @@ export type InsightDocument = HydratedDocument<Insight>;
 
 @Schema()
 export class Insight {
-  @Prop()
-  data: string;
+  @Prop({ type: [{ condition: String, count: Number }] })
+  data: { condition: string; count: number }[];
 
   @Prop()
-  timestamp: Date;
+  type: string;
+
+  @Prop()
+  date: string;
 }
 
 export const InsightSchema = SchemaFactory.createForClass(Insight);

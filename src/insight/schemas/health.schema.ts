@@ -10,7 +10,7 @@ export class Health {
   patientId: string;
 
   @Prop()
-  condition: string;
+  conditions: string[];
 }
 
 export const HealthSchema = SchemaFactory.createForClass(Health);
