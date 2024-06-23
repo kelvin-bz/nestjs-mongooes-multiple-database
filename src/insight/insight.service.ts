@@ -19,19 +19,6 @@ export class InsightService {
     private patientModel: Model<PatientDocument>,
   ) {}
 
-  async create(
-    data: { condition: string; count: number }[],
-    type: string,
-    date: string,
-  ): Promise<Insight> {
-    const newInsight = new this.insightModel({ data, type, date });
-    return newInsight.save();
-  }
-
-  async findAll(): Promise<Insight[]> {
-    return this.insightModel.find().exec();
-  }
-
   async generateInsightByAgeLessThan30(): Promise<Insight> {
     // Step 1: Retrieve all patients under the age of 30
     const patientsUnder30 = await this.patientModel
@@ -64,19 +51,19 @@ export class InsightService {
       .findOne({ date: formattedDate })
       .exec();
 
+    const insightData = {
+      data: healthAggregation,
+      type: 'Health Conditions for Patients under 30',
+      date: formattedDate,
+    };
+
     if (existingInsight) {
       // Update the existing insight
-      existingInsight.data = healthAggregation;
-      existingInsight.type = 'Health Conditions for Patients under 30';
-      existingInsight.date = formattedDate;
+      Object.assign(existingInsight, insightData);
       return existingInsight.save();
     } else {
       // Create a new insight
-      const newInsight = new this.insightModel({
-        data: healthAggregation,
-        type: 'Health Conditions for Patients under 30',
-        date: formattedDate,
-      });
+      const newInsight = new this.insightModel(insightData);
       return newInsight.save();
     }
   }
